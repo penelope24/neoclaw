@@ -27,10 +27,15 @@ class BaseLLM(ABC):
         """
         ...
 
-    def simple_chat(self, user_message: str, system_prompt: str | None = None) -> str:
+    def simple_chat(
+        self,
+        user_message: str,
+        system_prompt: str | None = None,
+        options: "ChatOptions | None" = None,
+    ) -> str:
         """便捷方法：单轮对话，不需要手动构建 Message 列表。"""
         messages = []
         if system_prompt:
             messages.append(Message(role="system", content=system_prompt))
         messages.append(Message(role="user", content=user_message))
-        return self.chat(messages)
+        return self.chat(messages, options)

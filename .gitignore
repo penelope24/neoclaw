@@ -1,5 +1,13 @@
 # 虚拟环境
 .venv/
+.neoenv/
+
+# Node.js
+node_modules/
+
+# WhatsApp Bridge 认证 session 及缓存（含敏感数据，勿上传）
+whatsapp-bridge/.wwebjs_auth/
+whatsapp-bridge/.wwebjs_cache/
 
 # Python
 __pycache__/

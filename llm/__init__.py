@@ -1,5 +1,5 @@
 from .base import BaseLLM, Message, ChatOptions
 from .ollama import OllamaLLM
-from .anthropic import AnthropicLLM
+from .openai_compatible import OpenAICompatibleLLM
 
-__all__ = ["BaseLLM", "Message", "ChatOptions", "OllamaLLM", "AnthropicLLM"]
+__all__ = ["BaseLLM", "Message", "ChatOptions", "OllamaLLM", "OpenAICompatibleLLM"]

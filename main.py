@@ -1,18 +1,38 @@
 import sys
 import config
+from llm.base import BaseLLM
 from llm.ollama import OllamaLLM
+from llm.openai_compatible import OpenAICompatibleLLM
 from tools.file_ops import ReadFileTool, WriteFileTool
+from tools.youtube_summary import YouTubeSummaryTool
 from agent import Agent
 
 
+def build_llm() -> BaseLLM:
+    if config.LLM_PROVIDER == "ollama":
+        return OllamaLLM(
+            model=config.OLLAMA_MODEL,
+            base_url=config.OLLAMA_BASE_URL,
+        )
+
+    if config.LLM_PROVIDER in config.ARK_MODELS:
+        if not config.ARK_API_KEY:
+            raise RuntimeError("ARK_API_KEY 未设置，请在 .env 文件中配置")
+        return OpenAICompatibleLLM(
+            model=config.ARK_MODELS[config.LLM_PROVIDER],
+            api_key=config.ARK_API_KEY,
+            base_url=config.ARK_BASE_URL,
+        )
+
+    raise RuntimeError(f"未知的 LLM_PROVIDER：{config.LLM_PROVIDER!r}")
+
+
 def build_agent() -> Agent:
-    llm = OllamaLLM(
-        model=config.LLM_MODEL,
-        base_url=config.LLM_BASE_URL,
-    )
+    llm = build_llm()
     tools = [
         ReadFileTool(),
         WriteFileTool(),
+        YouTubeSummaryTool(llm=llm),
     ]
     return Agent(llm=llm, tools=tools)
 
@@ -20,7 +40,7 @@ def build_agent() -> Agent:
 def run_cli(agent: Agent):
     """命令行模式，直接在终端对话。"""
     print("Neoclaw 启动 👾  （命令行模式）")
-    print(f"模型：{config.LLM_MODEL}  沙盒：{config.SANDBOX_DIR}")
+    print(f"模型：{config.current_model_name()}  沙盒：{config.SANDBOX_DIR}")
     print("输入 'quit' 退出，'reset' 清空对话历史\n")
 
     while True:
